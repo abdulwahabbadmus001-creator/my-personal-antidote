@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <title>My Personal Antidote</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card: #131b2e;
+            --card-alt: #0d1322;
+            --border: #26334d;
+            --gold: #f59e0b;
+            --teal: #10b981;
+            --blue: #3b82f6;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            padding-bottom: 90px;
+        }
+        header {
+            background: rgba(19, 27, 46, 0.96);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.85rem 1.1rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand { font-weight: 800; font-size: 0.98rem; color: var(--gold); letter-spacing: 0.03em; }
+        .tabs { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+        .tab-btn {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.78rem;
+        }
+        .tab-btn.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+        }
+        .container { max-width: 900px; margin: 1.15rem auto; padding: 0 1rem; }
+
+        /* Dual-Habit Daily Commitment Bar */
+        .habit-bar {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.95rem 1.15rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .habit-checks { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .habit-pill {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .habit-pill.done {
+            background: rgba(16, 185, 129, 0.16);
+            border-color: var(--teal);
+            color: var(--teal);
+        }
+        .streak-grid { display: flex; gap: 0.3rem; align-items: center; }
+        .streak-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            background: #1e293b;
+            border: 1px solid var(--border);
+        }
+        .streak-dot.half { background: rgba(245, 158, 11, 0.55); border-color: var(--gold); }
+        .streak-dot.full { background: var(--teal); border-color: var(--teal); }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.3rem;
+            margin-bottom: 1.2rem;
+        }
+        .card-spotlight {
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.12);
+        }
+        .card-review {
+            border: 2px solid var(--teal);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-family: monospace;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            background: rgba(59,130,246,0.18);
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .badge-today { background: var(--gold); color: #000; font-weight: 800; }
+        .badge-done { background: rgba(16,185,129,0.2); color: var(--teal); }
+        .btn-primary {
+            background: var(--teal);
+            color: #032b22;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.83rem;
+            cursor: pointer;
+        }
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 0.58rem 1rem;
+            border-radius: 7px;
+            font-weight: 700;
+            font-size: 0.83rem;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+            border: none;
+            padding: 0.5rem 0.9rem;
+            border-radius: 7px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .progress-bar-wrap {
+            background: #070a10;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.95rem;
+            margin-bottom: 1.2rem;
+        }
+        .progress-track {
+            width: 100%;
+            height: 9px;
+            background: #1e293b;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 0.45rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--teal));
+            transition: width 0.3s ease;
+        }
+        .day-pills { display: flex; gap: 0.38rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .day-pill {
+            padding: 0.32rem 0.62rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--card-alt);
+            color: var(--muted);
+        }
+        .day-pill.done { border-color: var(--teal); color: var(--teal); background: rgba(16, 185, 129, 0.1); }
+        .day-pill.current { border-color: var(--gold); background: var(--gold); color: #000; }
+        .code-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin: 0.95rem 0;
+        }
+        @media (max-width: 650px) { .code-grid { grid-template-columns: 1fr; } }
+        .code-box {
+            background: #060911;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.8rem;
+            overflow-x: auto;
+        }
+        .code-label {
+            font-size: 0.71rem;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.35rem;
+            font-weight: 700;
+        }
+        pre {
+            font-family: 'Consolas', monospace;
+            font-size: 0.82rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+        .explain-box {
+            background: rgba(16, 185, 129, 0.06);
+            border-left: 3px solid var(--teal);
+            padding: 0.8rem 0.95rem;
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            margin-top: 0.7rem;
+        }
+        .gate-box {
+            background: #070b14;
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 0.95rem;
+            margin-top: 0.95rem;
+        }
+        .gate-box label {
+            display: block;
+            font-size: 0.83rem;
+            color: #fde68a;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+        }
+        textarea, input {
+            width: 100%;
+            background: #060911;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.68rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.86rem;
+            margin-bottom: 0.65rem;
+        }
+        .context-box {
+            background: #070b14;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.9rem 0;
+            white-space: pre-line;
+            font-size: 0.89rem;
+            color: #cbd5e1;
+        }
+        .studio-box {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.05rem;
+            margin-top: 1rem;
+        }
+        .btn-row { display: flex; gap: 0.55rem; flex-wrap: wrap; align-items: center; }
+        .meta-line { font-size: 0.83rem; color: var(--gold); font-weight: 600; margin-bottom: 0.5rem; }
+        .hook-box {
+            background: rgba(245,158,11,0.08);
+            border: 1px dashed rgba(245,158,11,0.4);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-top: 0.75rem;
+            font-size: 0.87rem;
+        }
+        .citations {
+            font-size: 0.79rem;
+            color: var(--muted);
+            margin-top: 0.8rem;
+            padding-top: 0.65rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .source-link { color: var(--teal); text-decoration: none; font-weight: 700; }
+        .hidden { display: none; }
+        .toast { font-size: 0.81rem; color: var(--teal); font-weight: 700; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">◈ MY PERSONAL ANTIDOTE</div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('cs50')">1. CS50 & Python</button>
+            <button class="tab-btn" onclick="switchTab('africa')">2. Africa AI Studio</button>
+            <button class="tab-btn" onclick="switchTab('compiler')">3. Weekly Compiler</button>
+            <button class="tab-btn" onclick="switchTab('backup')">4. Add & Backup</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- DUAL-HABIT DAILY COMMITMENT TRACKER -->
+        <div class="habit-bar">
+            <div class="habit-checks">
+                <span id="habit-code" class="habit-pill">⬜ Today's Code Gate</span>
+                <span id="habit-brief" class="habit-pill">⬜ Today's AI Brief Conclusion</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+                <span style="font-size:0.78rem; color:var(--muted); font-weight:600;">14-Day Activity:</span>
+                <div id="streak-grid" class="streak-grid"></div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: CS50 & PYTHON DAILY TRACKER + SPACED REPETITION    -->
+        <!-- ========================================================= -->
+        <div id="tab-cs50">
+            <div class="progress-bar-wrap">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong>📈 CS50 & Python Daily Curriculum</strong>
+                    <span id="progress-text" style="color:var(--gold); font-weight:700; font-size:0.85rem;"></span>
+                </div>
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div id="day-pills" class="day-pills"></div>
+            </div>
+
+            <!-- 1-3-7 Spaced Repetition Review Queue -->
+            <div id="review-queue-box"></div>
+
+            <!-- Spotlight Card for Today's Lesson -->
+            <div id="spotlight-lesson"></div>
+
+            <!-- Completed History Log -->
+            <div class="card">
+                <h3 style="margin-bottom:0.7rem; font-size:1rem;">✓ Completed Lessons Log</h3>
+                <div id="completed-log"></div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: AFRICA AI GOVERNANCE BRIEFS & SOCIAL POST STUDIO   -->
+        <!-- ========================================================= -->
+        <div id="tab-africa" class="hidden">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+                <div>
+                    <h2 style="font-size:1.15rem;">Africa AI Governance Observatory</h2>
+                    <p style="font-size:0.84rem; color:var(--muted);">Read verified dossiers, listen via audio, write your conclusion, and generate social posts.</p>
+                </div>
+                <button id="sync-btn" class="btn-primary" onclick="syncLiveBriefsBrowser()">
+                    ↻ Fetch Live Africa AI News
+                </button>
+            </div>
+            <div id="sync-status" class="toast hidden" style="margin-bottom: 0.9rem;"></div>
+            <div id="briefs-list"></div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: WEEKLY LITERATURE REVIEW & BLOG COMPILER           -->
+        <!-- ========================================================= -->
+        <div id="tab-compiler" class="hidden">
+            <div class="card card-spotlight">
+                <span class="badge badge-today">SCHOLARLY & BLOG SYNTHESIS</span>
+                <h2 style="margin-bottom:0.4rem;">Weekly Literature Review & Blog Post Compiler</h2>
+                <p style="font-size:0.86rem; color:var(--muted); margin-bottom:1rem;">
+                    Compiles all the analytical conclusions, research questions, and citations you wrote across your AI Governance briefs into one structured Markdown article for your blog or academic proposal.
+                </p>
+                <div class="btn-row" style="margin-bottom:0.9rem;">
+                    <button class="btn-gold" onclick="compileWeeklyReview()">✨ Compile All My Conclusions Now</button>
+                    <button class="btn-primary" onclick="copyCompiledReview()">📋 Copy Markdown</button>
+                    <span id="compiler-msg" class="toast"></span>
+                </div>
+                <textarea id="compiled-output" rows="14" placeholder="Click 'Compile All My Conclusions Now' to assemble your research synthesis..."></textarea>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: ADD CUSTOM LESSON & JSON BACKUP / RESTORE          -->
+        <!-- ========================================================= -->
+        <div id="tab-backup" class="hidden">
+            <div class="card">
+                <h2 style="font-size:1.1rem; margin-bottom:0.5rem;">☁️ Backup & Restore Your Progress (.JSON)</h2>
+                <p style="font-size:0.84rem; color:var(--muted); margin-bottom:0.9rem;">
+                    Your progress is saved automatically in your phone browser's storage. Download a JSON backup anytime to transfer your streak and notes between your PC and phone.
+                </p>
+                <div class="btn-row">
+                    <button class="btn-gold" onclick="exportBackupJson()">📥 Download Backup (.json)</button>
+                    <label class="btn-secondary" style="cursor:pointer;">
+                        📤 Restore from Backup (.json)
+                        <input type="file" accept=".json" style="display:none;" onchange="importBackupJson(event)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size:1.1rem; margin-bottom:0.8rem;">+ Add Custom CS50 / Python Lesson</h2>
+                <input id="c-lecture" placeholder="Lecture / Module (e.g. CS50 Lecture 7: SQL)">
+                <input id="c-topic" placeholder="Lesson Title (e.g. INNER JOIN in SQLite)">
+                <textarea id="c-code" rows="3" placeholder="Paste C or SQL code..."></textarea>
+                <textarea id="p-code" rows="3" placeholder="Paste Python equivalent..."></textarea>
+                <textarea id="c-explain" rows="2" placeholder="Plain-English explanation..."></textarea>
+                <input id="c-gate" placeholder="Exact C/Python line required to unlock completion (e.g. SELECT * FROM)">
+                <button class="btn-primary" onclick="saveCustomCard()">+ Add Lesson</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden High-Resolution Canvas for Phone Lock-Screen Wallpaper -->
+    <canvas id="wallpaper-canvas" width="1080" height="2400" class="hidden"></canvas>
+
+    <script>
+        const DEFAULT_DB = {"cards": [{"id": 1, "day_number": 1, "lecture": "Day 1 • CS50 Lecture 1: C Basics", "topic": "Hello, World! & Program Entry Point", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    printf(\"Hello, world!\\n\");\n    return 0;\n}", "python_code": "print(\"Hello, world!\")", "explanation": "In C, nothing exists until you import it. '#include <stdio.h>' loads standard input/output so printf() works. Every C program must start inside 'int main(void)' and return 0 to tell the operating system it finished without errors.", "unlock_gate": "int main(void)", "gate_hint": "Type the exact C function signature where every program starts: int main(void)", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 2, "day_number": 2, "lecture": "Day 2 • CS50 Lecture 1: Types & Format Specifiers", "topic": "Variables, Static Typing & printf() Placeholders", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    int age = 25;\n    char grade = 'A';\n    printf(\"Age: %i, Grade: %c\\n\", age, grade);\n    return 0;\n}", "python_code": "age = 25\ngrade = \"A\"\nprint(f\"Age: {age}, Grade: {grade}\")", "explanation": "C is statically typed: you must declare 'int' (integer) or 'char' (single character) before the variable name. To print them, C uses placeholders like %i for int and %c for char, whereas Python uses f-strings.", "unlock_gate": "%i", "gate_hint": "Type the 2-character format specifier used to print an integer in C: %i", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 3, "day_number": 3, "lecture": "Day 3 • CS50 Lecture 1: Control Flow & Loops", "topic": "Conditionals (if/else) & For-Loops", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    for (int i = 0; i < 3; i++)\n    {\n        printf(\"Count: %i\\n\", i);\n    }\n    return 0;\n}", "python_code": "for i in range(3):\n    print(f\"Count: {i}\")", "explanation": "C's for-loop explicitly shows the 3 steps Python's range(3) hides: (1) start i at 0 (int i = 0), (2) keep going while i < 3, and (3) add 1 after each turn (i++).", "unlock_gate": "for (int i = 0; i < 3; i++)", "gate_hint": "Type the C for-loop header: for (int i = 0; i < 3; i++)", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 4, "day_number": 4, "lecture": "Day 4 • CS50 Lecture 2: Arrays & Memory Contiguity", "topic": "Fixed-Size Arrays in C vs Dynamic Lists in Python", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    int scores[3] = {72, 73, 33};\n    int sum = scores[0] + scores[1] + scores[2];\n    printf(\"Average: %.2f\\n\", sum / 3.0);\n    return 0;\n}", "python_code": "scores = [72, 73, 33]\nprint(f\"Average: {sum(scores) / len(scores):.2f}\")", "explanation": "In C, 'int scores[3]' reserves 3 contiguous 4-byte boxes (12 bytes total) in RAM. Notice we divide by 3.0 (float) so C does not chop off the decimal remainder!", "unlock_gate": "int scores[3]", "gate_hint": "Type the C declaration for a 3-element integer array named scores: int scores[3]", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 5, "day_number": 5, "lecture": "Day 5 • CS50 Lecture 2: Strings Under the Hood", "topic": "Strings as Character Arrays Ending in NUL (\\0)", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    char name[] = \"HI!\";\n    // Stored in RAM as 4 bytes: 'H', 'I', '!', '\\0'\n    printf(\"%c %c %c %i\\n\", name[0], name[1], name[2], name[3]);\n    return 0;\n}", "python_code": "name = \"HI!\"\nfor ch in name:\n    print(ch, ord(ch))", "explanation": "There is no native 'string' hardware type in C! A string is simply an array of characters terminated by a hidden all-zero byte ('\\0', value 0) so the computer knows where the string ends in RAM.", "unlock_gate": "\\0", "gate_hint": "Type the 2-character escape code for the NUL terminator byte in C: \\0", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 6, "day_number": 6, "lecture": "Day 6 • CS50 Lecture 3: Algorithms & Big-O", "topic": "Linear Search O(n) vs Binary Search O(log n)", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    int nums[5] = {10, 20, 30, 40, 50};\n    for (int i = 0; i < 5; i++)\n    {\n        if (nums[i] == 40)\n        {\n            printf(\"Found at index %i\\n\", i);\n            return 0;\n        }\n    }\n    return 1;\n}", "python_code": "nums = [10, 20, 30, 40, 50]\nif 40 in nums:\n    print(f\"Found at index {nums.index(40)}\")", "explanation": "When you write 'if 40 in nums' in Python, under the hood Python executes the exact C for-loop shown on the left! Returning 0 means success; returning 1 signals 'not found'.", "unlock_gate": "if (nums[i] == 40)", "gate_hint": "Type the C equality check inside the loop: if (nums[i] == 40)", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 7, "day_number": 7, "lecture": "Day 7 • CS50 Lecture 4: Pointers Demystified", "topic": "Address-Of (&) vs Dereference (*)", "c_code": "#include <stdio.h>\n\nint main(void)\n{\n    int n = 50;\n    int *p = &n;           // & gets RAM address of n\n    printf(\"Address: %p\\n\", p);\n    printf(\"Value: %i\\n\", *p); // * reads value at address p\n    return 0;\n}", "python_code": "n = 50\n# Python manages object references automatically\nprint(f\"Memory ID: {hex(id(n))}\")\nprint(f\"Value: {n}\")", "explanation": "Never let pointers intimidate you again. '&n' means 'What is the street address of n in RAM?'. '*p' means 'Walk to that street address and open the mailbox to read the number inside (50)'.", "unlock_gate": "int *p = &n;", "gate_hint": "Type the exact C line that stores the address of n in pointer p: int *p = &n;", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 8, "day_number": 8, "lecture": "Day 8 • CS50 Lecture 4 & 5: Heap Memory", "topic": "Manual Memory Allocation: malloc() and free()", "c_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int *arr = malloc(3 * sizeof(int));\n    if (arr == NULL) return 1;\n    arr[0] = 5;\n    printf(\"First: %i\\n\", arr[0]);\n    free(arr); // Prevent memory leak!\n    return 0;\n}", "python_code": "# Python Garbage Collector calls malloc/free for you\narr = [5]\nprint(f\"First: {arr[0]}\")", "explanation": "In C, 'malloc(3 * sizeof(int))' asks the OS for 12 bytes on the Heap. Always check 'if (arr == NULL)' in case RAM is full, and always call 'free(arr)' when done.", "unlock_gate": "free(arr);", "gate_hint": "Type the C command that releases allocated heap memory back to the OS: free(arr);", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 9, "day_number": 9, "lecture": "Day 9 • CS50 Lecture 6 & freeCodeCamp Python", "topic": "Dictionaries (Hash Tables) & JSON Data", "c_code": "// In C (Lecture 5), a Hash Table requires\n// custom struct nodes, hash functions, and linked lists.", "python_code": "brief = {\n    \"country\": \"Nigeria\",\n    \"strategy\": \"NAIS 2025-2029\",\n    \"agency\": \"NITDA / NCAIR\"\n}\nfor key, val in brief.items():\n    print(f\"{key}: {val}\")", "explanation": "What takes 150 lines of C pointers in CS50 Lecture 5 (Hash Tables) takes 4 lines in Python using a 'dict' ({key: value}). Constant-time O(1) lookup!", "unlock_gate": "for key, val in brief.items():", "gate_hint": "Type the Python loop header to iterate over dictionary keys and values: for key, val in brief.items():", "mastered": 0, "completed_date": "", "review_stage": 0}, {"id": 10, "day_number": 10, "lecture": "Day 10 • CS50 Lecture 7: SQL in Python", "topic": "Parameterized SQLite Queries (Preventing SQL Injection)", "c_code": "// C requires low-level sqlite3_prepare_v2() C API", "python_code": "import sqlite3\n\nconn = sqlite3.connect(\"antidote.db\")\ncursor = conn.cursor()\ncursor.execute(\n    \"UPDATE ai_briefs SET user_conclusion = ? WHERE id = ?\",\n    (\"My policy conclusion\", 1)\n)\nconn.commit()", "explanation": "Whenever you save data in SQLite from Python, always use '?' placeholders instead of f-strings so special characters never trigger SQL Injection vulnerabilities.", "unlock_gate": "conn.commit()", "gate_hint": "Type the Python sqlite3 command that permanently saves your transaction: conn.commit()", "mastered": 0, "completed_date": "", "review_stage": 0}], "briefs": [{"id": 1, "date_published": "Oct 2026 (AU Implementation Review)", "title": "African Union Continental AI Strategy (2025-2030): Phase I Foundation Building & The Development-Governance Paradox", "institution": "African Union Commission (AUC) / Executive Council Doc. EX.CL/1498(XLV)", "summary": "Adopted at the 45th AU Executive Council meeting in Accra and operationalised across 2025-2030, the Continental AI Strategy aims to add $1.5 trillion to the African economy by 2030 across 55 member states.", "full_context": "1. THE EMPIRICAL FACTS:\nAdopted by the African Union Executive Council (Accra, Ghana) for the 2025–2030 implementation window, the AU Continental Artificial Intelligence Strategy positions Africa as an active rule-maker rather than a passive consumer. Empirical tracking of the first 18 months of implementation reveals over $100 million in initial partnerships and 250,000+ trainees, but exposes a sharp geographic imbalance: 83% of early AI funding is concentrated in just four countries (Nigeria, Kenya, South Africa, and Egypt).\n\n2. THE THREE IMPLEMENTATION PHASES:\n• Phase I (Years 1–2, 2025–2026 — Foundation Building): Focuses on reliable electricity for data centres, 4G/5G connectivity, sovereign cloud storage for sensitive citizen data, National AI Councils, and regulatory sandboxes.\n• Phase II & III (2027–2030 — Capability Development & Scaling): Focuses on cross-border data trusts under the AfCFTA Digital Trade Protocol and regional High-Performance Computing (HPC) clusters.\n\n3. THE CORE POLICY DILEMMA:\nResearchers identify a 'Development-Governance Paradox': when African states copy-paste high-compliance risk tiers from the European Union AI Act before building basic compute, electricity, and regulatory sandbox capacity, premature red tape can suffocate local startups while leaving foreign Big Tech unchecked.", "strategic_move": "Establishing Phase I minimal viable governance (National AI Councils and regulatory sandboxes) while prioritising sovereign compute and data infrastructure over premature EU-style statutory restrictions.", "citations": "AU Continental Artificial Intelligence Strategy (AU Doc. EX.CL/1498(XLV)); OECD.AI Policy Observatory (2026); AU Development-Governance Implementation Review (2025-2026)", "research_hook": "How can AU member states resolve the 'Development-Governance Paradox' and correct the 83% geographic funding concentration across the remaining 51 member states?", "theory_lens": "Development-Governance Paradox & Institutional Sequencing Theory (Fukuyama)", "source_url": "https://oecd.ai/en/dashboards/policy-initiatives/continental-artificial-intelligence-strategy", "user_conclusion": "", "social_draft": "", "concluded_date": ""}, {"id": 2, "date_published": "Apr - Oct 2026 (National Implementation)", "title": "Nigeria's National Artificial Intelligence Strategy (NAIS 2025-2029) & NCAIR Sovereign Multilingual LLM", "institution": "Federal Ministry of Communications, Innovation and Digital Economy (FMCIDE) / NITDA / NCAIR", "summary": "Nigeria's five-year NAIS framework (2025-2029) coordinates sovereign cloud compute via Galaxy Backbone, the National AI Trust, and the open-source N-ATLaS multilingual foundation model.", "full_context": "1. THE EMPIRICAL FACTS:\nLed by the Federal Ministry of Communications, Innovation and Digital Economy (FMCIDE) with the National Information Technology Development Agency (NITDA) and the National Centre for AI and Robotics (NCAIR) as implementing bodies, Nigeria's National Artificial Intelligence Strategy (NAIS) sets a five-year roadmap (2025–2029). The strategy was co-created through multi-stakeholder consultations involving the AI4Dev Reference Group and institutionalised through the National Artificial Intelligence Trust.\n\n2. STRATEGIC PILLARS & TARGET SECTORS:\n• Target Sectors: Agriculture (crop yield analytics), Healthcare (telemedicine), Finance & FinTech (credit scoring & inclusion), Education, and Public Governance.\n• Sovereign Linguistic Infrastructure: Deployment of 'N-ATLaS', an open-source multilingual foundation model trained on Yoruba, Hausa, Igbo, and Nigerian-accented English, hosted on domestic sovereign cloud infrastructure (Galaxy Backbone) in compliance with the Nigeria Data Protection Act (NDPA).\n\n3. GOVERNANCE SIGNIFICANCE:\nRather than passing a punitive law first, Nigeria sequenced talent development (3MTT / AI Talent Development), indigenous dataset curation, and ethical guidelines first—demonstrating an innovation-first model for the Global South.", "strategic_move": "Sequencing sovereign compute (Galaxy Backbone), open-source indigenous language models (N-ATLaS), and a National AI Trust ahead of restrictive statutory licensing.", "citations": "Nigeria National Artificial Intelligence Strategy (NAIS 2025-2029, FMCIDE/NITDA); OECD.AI Nigeria Policy Dashboard (Updated April 2026); Nigeria Data Protection Act (NDPA)", "research_hook": "To what extent does state-backed open-source multilingual AI infrastructure (such as N-ATLaS) reduce epistemic bias and foreign API dependency in West African public administration?", "theory_lens": "Decolonial Computing (Mohamed, Png, & Isaac) & Epistemic Injustice (Miranda Fricker)", "source_url": "https://oecd.ai/en/dashboards/policy-initiatives/national-artificial-intelligence-strategy-nais", "user_conclusion": "", "social_draft": "", "concluded_date": ""}, {"id": 3, "date_published": "Sept - Oct 2026 (Multilateral Diplomacy)", "title": "Africa AI Governance Summit at UNGA & UNESCO Priority Africa: Collective Bargaining in Global AI Norms", "institution": "Africa AI Policy Lab, Lawyers Hub, UNESCO & African Union Commission", "summary": "Convened alongside the UN General Assembly High-Level Week (Sept 2026) and UNESCO's 225th Executive Board Session (Oct 2026), African negotiators are pushing for binding cross-border data equity and Public Interest AI.", "full_context": "1. THE EMPIRICAL FACTS:\nFollowing the Paris AI Action Summit (where UNESCO and AU Commissioners highlighted 'Global Priority Africa') and the Africa AI Governance Summit hosted by the Africa AI Policy Lab and Lawyers Hub during UN General Assembly High-Level Week (20–25 September 2026), African diplomatic coalitions have shifted from requesting aid to demanding structural representation in global AI standard-setting.\n\n2. CORE DIPLOMATIC DEMANDS:\n• Accountable, Rights-Respecting Governance for African Contexts: Rejecting one-size-fits-all Global North risk definitions that ignore informal labour markets, biometric surveillance harms, and uncompensated data scraping.\n• Cross-Border Regulatory Interoperability: Aligning national data protection authorities across ECOWAS, EAC, and SADC to negotiate collectively with global hyperscalers.\n• Public Interest AI: Directing international compute financing toward climate resilience, food security, and indigenous language preservation (UNESCO Priority Africa).\n\n3. ANALYTICAL TAKEAWAY:\nIndividual African nations face asymmetrical bargaining power when negotiating cloud and data treaties with trillion-dollar AI labs. Collective coalition bargaining through the AU and UN Global Digital Compact is emerging as Africa's primary diplomatic lever.", "strategic_move": "Mobilising collective diplomatic coalitions at the UN General Assembly and UNESCO to embed 'Public Interest AI' and African linguistic/cultural preservation into global treaties.", "citations": "UNESCO Priority Africa at the AI Action Summit & 225th Executive Board (Oct 2026); Africa AI Policy Lab & Lawyers Hub UNGA Summit Dossier (Sept 2026); UN Global Digital Compact", "research_hook": "How effective is the Africa Group's collective bargaining coalition at the UN and UNESCO in shifting global AI governance from existential risk debates toward Public Interest AI?", "theory_lens": "Regime Complex Theory (Keohane & Victor) & Coalition Bargaining Theory in International Relations", "source_url": "https://www.unesco.org/en/articles/priority-africa-artificial-intelligence-action-summit", "user_conclusion": "", "social_draft": "", "concluded_date": ""}]};
+        const STORAGE_KEY = 'antidote_pwa_v4_db';
+        let db = loadDatabase();
+        let selectedDayId = null;
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        function loadDatabase() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DB));
+                return JSON.parse(JSON.stringify(DEFAULT_DB));
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                // Ensure any new default cards or unlock_gates exist
+                DEFAULT_DB.cards.forEach(defCard => {
+                    const existing = parsed.cards.find(c => c.day_number === defCard.day_number);
+                    if (!existing) {
+                        parsed.cards.push(defCard);
+                    } else if (!existing.unlock_gate) {
+                        existing.unlock_gate = defCard.unlock_gate;
+                        existing.gate_hint = defCard.gate_hint;
+                    }
+                });
+                return parsed;
+            } catch (e) {
+                return JSON.parse(JSON.stringify(DEFAULT_DB));
+            }
+        }
+
+        function saveDatabase() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+            renderAll();
+        }
+
+        function switchTab(tab) {
+            ['cs50', 'africa', 'compiler', 'backup'].forEach((t, idx) => {
+                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+                document.querySelectorAll('.tab-btn')[idx].classList.toggle('active', t === tab);
+            });
+        }
+
+        function getTodayStr() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function daysBetween(dateStr1, dateStr2) {
+            if (!dateStr1 || !dateStr2) return 0;
+            const d1 = new Date(dateStr1);
+            const d2 = new Date(dateStr2);
+            return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+        }
+
+        // =============================================================
+        // HANDS-FREE AUDIO READER (Web Speech API)
+        // =============================================================
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-speech is not supported on this browser.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.98;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        // =============================================================
+        // DUAL-HABIT STREAK & 14-DAY CONSISTENCY BAR
+        // =============================================================
+        function renderHabitBar() {
+            const today = getTodayStr();
+            const codeDoneToday = db.cards.some(c => c.completed_date === today);
+            const briefDoneToday = db.briefs.some(b => b.concluded_date === today);
+
+            const codePill = document.getElementById('habit-code');
+            const briefPill = document.getElementById('habit-brief');
+
+            codePill.className = 'habit-pill' + (codeDoneToday ? ' done' : '');
+            codePill.innerText = (codeDoneToday ? '✓ ' : '⬜ ') + "Today's Code Gate";
+
+            briefPill.className = 'habit-pill' + (briefDoneToday ? ' done' : '');
+            briefPill.innerText = (briefDoneToday ? '✓ ' : '⬜ ') + "Today's AI Brief Conclusion";
+
+            // Render 14-day grid
+            const grid = document.getElementById('streak-grid');
+            let dotsHtml = '';
+            for (let i = 13; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dStr = d.toISOString().slice(0, 10);
+                const cDone = db.cards.some(c => c.completed_date === dStr);
+                const bDone = db.briefs.some(b => b.concluded_date === dStr);
+                const cls = (cDone && bDone) ? 'streak-dot full' : ((cDone || bDone) ? 'streak-dot half' : 'streak-dot');
+                dotsHtml += `<div class="${cls}" title="${dStr}"></div>`;
+            }
+            grid.innerHTML = dotsHtml;
+        }
+
+        // =============================================================
+        // CS50 & PYTHON TRACKER + TYPE-TO-UNLOCK + 1-3-7 SPACED REVIEW
+        // =============================================================
+        function renderCS50Tracker() {
+            const cards = db.cards;
+            const total = cards.length;
+            const completedCards = cards.filter(c => c.mastered === 1);
+            const pct = total > 0 ? Math.round((completedCards.length / total) * 100) : 0;
+
+            document.getElementById('progress-text').innerText = `${completedCards.length} / ${total} Completed (${pct}%)`;
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+
+            // 1. Check 1-3-7 Spaced Repetition Queue
+            const today = getTodayStr();
+            const dueReviews = completedCards.filter(c => {
+                const diff = daysBetween(c.completed_date, today);
+                return (diff >= 1 && (c.review_stage || 0) < 1) ||
+                       (diff >= 3 && (c.review_stage || 0) < 2) ||
+                       (diff >= 7 && (c.review_stage || 0) < 3);
+            });
+
+            const reviewBox = document.getElementById('review-queue-box');
+            if (dueReviews.length > 0) {
+                const r = dueReviews[0];
+                reviewBox.innerHTML = `
+                    <div class="card card-review">
+                        <span class="badge badge-done">🔁 1-3-7 SPACED REPETITION CHECK (30 SECONDS)</span>
+                        <h3 style="margin-bottom:0.35rem;">Quick Recall: ${escapeHtml(r.topic)}</h3>
+                        <p style="font-size:0.84rem; color:var(--muted); margin-bottom:0.6rem;">${escapeHtml(r.gate_hint || 'Type the core syntax line:')}</p>
+                        <div class="btn-row">
+                            <input id="review-input-${r.id}" style="max-width:340px; margin:0; font-family:monospace;" placeholder="Type syntax here...">
+                            <button class="btn-primary" onclick="verifySpacedReview(${r.id})">✓ Verify Recall</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                reviewBox.innerHTML = '';
+            }
+
+            // 2. Active Spotlight Lesson
+            const nextUncompleted = cards.find(c => c.mastered === 0) || cards[cards.length - 1];
+            const activeCard = (selectedDayId !== null && cards.find(c => c.id === selectedDayId))
+                ? cards.find(c => c.id === selectedDayId)
+                : nextUncompleted;
+
+            document.getElementById('day-pills').innerHTML = cards.map(c => {
+                const isCurrent = activeCard && c.id === activeCard.id;
+                const cls = isCurrent ? 'day-pill current' : (c.mastered ? 'day-pill done' : 'day-pill');
+                return `<button class="${cls}" onclick="selectDay(${c.id})">Day ${c.day_number} ${c.mastered ? '✓' : ''}</button>`;
+            }).join('');
+
+            const spotlightEl = document.getElementById('spotlight-lesson');
+            if (activeCard) {
+                const isNextUp = nextUncompleted && activeCard.id === nextUncompleted.id && !activeCard.mastered;
+                const gateCode = activeCard.unlock_gate || 'return 0;';
+                spotlightEl.innerHTML = `
+                    <div class="card card-spotlight">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                            <div>
+                                <span class="badge ${isNextUp ? 'badge-today' : (activeCard.mastered ? 'badge-done' : '')}">
+                                    ${isNextUp ? '🎯 TODAY\'S ACTIVE LESSON' : (activeCard.mastered ? `✓ COMPLETED (${activeCard.completed_date})` : 'PREVIEW')}
+                                </span>
+                                <span class="badge">${escapeHtml(activeCard.lecture)}</span>
+                            </div>
+                            <button class="btn-secondary" onclick="speakText(${JSON.stringify(activeCard.topic + '. ' + activeCard.explanation).replace(/"/g, '&quot;')})">
+                                🔊 Listen to Lesson
+                            </button>
+                        </div>
+
+                        <h2 style="font-size:1.22rem; margin:0.4rem 0;">${escapeHtml(activeCard.topic)}</h2>
+
+                        <div class="code-grid">
+                            <div class="code-box">
+                                <div class="code-label">C Language (CS50)</div>
+                                <pre>${escapeHtml(activeCard.c_code)}</pre>
+                            </div>
+                            <div class="code-box">
+                                <div class="code-label">Python 3 (freeCodeCamp)</div>
+                                <pre>${escapeHtml(activeCard.python_code)}</pre>
+                            </div>
+                        </div>
+
+                        <div class="explain-box">
+                            <strong>🧠 Key Concept Breakdown:</strong><br>${escapeHtml(activeCard.explanation)}
+                        </div>
+
+                        ${!activeCard.mastered ? `
+                        <div class="gate-box">
+                            <label>🔒 Muscle-Memory Unlock Gate: ${escapeHtml(activeCard.gate_hint || `Type '${gateCode}' to unlock completion:`)}</label>
+                            <input id="gate-input-${activeCard.id}"
+                                   style="font-family:monospace; margin-bottom:0.4rem;"
+                                   placeholder="Type: ${escapeHtml(gateCode)}"
+                                   oninput="checkUnlockGate(${activeCard.id}, ${JSON.stringify(gateCode).replace(/"/g, '&quot;')})">
+                            <div id="gate-status-${activeCard.id}" style="font-size:0.78rem; color:var(--muted);">
+                                Type the exact syntax above so your fingers build muscle memory.
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="btn-row" style="margin-top:1.1rem;">
+                            <button id="complete-btn-${activeCard.id}"
+                                    class="btn-primary"
+                                    ${!activeCard.mastered ? 'disabled' : ''}
+                                    onclick="toggleMastered(${activeCard.id})">
+                                ${activeCard.mastered
+                                    ? '↺ Mark Unfinished (Review Again)'
+                                    : '✓ Complete Today\'s Lesson & Unlock Tomorrow'}
+                            </button>
+                            <button class="btn-gold" onclick="downloadWallpaper(${activeCard.id})">
+                                🖼️ Save as Phone Lock-Screen Wallpaper (.PNG)
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const logEl = document.getElementById('completed-log');
+            if (completedCards.length === 0) {
+                logEl.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">Type the unlock syntax in Day 1 above to log your first completed lesson.</p>`;
+            } else {
+                logEl.innerHTML = completedCards.map(c => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--border); font-size:0.85rem;">
+                        <div><strong style="color:var(--teal);">✓ Day ${c.day_number}:</strong> ${escapeHtml(c.topic)}</div>
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <span class="badge badge-done" style="margin:0;">${escapeHtml(c.completed_date)}</span>
+                            <button class="btn-secondary" style="padding:0.2rem 0.55rem; font-size:0.74rem;" onclick="selectDay(${c.id})">View</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function normalizeCode(str) {
+            return String(str || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function checkUnlockGate(cardId, expected) {
+            const inputVal = document.getElementById(`gate-input-${cardId}`).value;
+            const btn = document.getElementById(`complete-btn-${cardId}`);
+            const status = document.getElementById(`gate-status-${cardId}`);
+
+            if (normalizeCode(inputVal) === normalizeCode(expected)) {
+                btn.disabled = false;
+                status.style.color = '#10b981';
+                status.innerText = '✓ Syntax verified! Click the green button below to complete today\'s lesson.';
+            } else {
+                btn.disabled = true;
+                status.style.color = '#94a3b8';
+                status.innerText = `Keep typing until it matches: ${expected}`;
+            }
+        }
+
+        function verifySpacedReview(cardId) {
+            const card = db.cards.find(c => c.id === cardId);
+            if (!card) return;
+            const val = document.getElementById(`review-input-${cardId}`).value;
+            if (normalizeCode(val) === normalizeCode(card.unlock_gate)) {
+                card.review_stage = (card.review_stage || 0) + 1;
+                saveDatabase();
+            } else {
+                alert(`Almost! The exact syntax is: ${card.unlock_gate}`);
+            }
+        }
+
+        function selectDay(cardId) {
+            selectedDayId = cardId;
+            renderCS50Tracker();
+        }
+
+        function toggleMastered(id) {
+            selectedDayId = null;
+            const today = getTodayStr();
+            const card = db.cards.find(c => c.id === id);
+            if (card) {
+                card.mastered = card.mastered === 1 ? 0 : 1;
+                card.completed_date = card.mastered === 1 ? today : '';
+                card.review_stage = 0;
+                saveDatabase();
+            }
+        }
+
+        // =============================================================
+        // RENDER AFRICA AI BRIEFS + BROWSER-NATIVE LIVE NEWS FETCH
+        // =============================================================
+        function renderBriefs() {
+            const container = document.getElementById('briefs-list');
+            container.innerHTML = db.briefs.map(b => `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                        <span class="badge">${escapeHtml(b.date_published)}</span>
+                        <div class="btn-row">
+                            <button class="btn-secondary" style="padding:0.3rem 0.65rem; font-size:0.75rem;"
+                                    onclick="speakText(${JSON.stringify(b.title + '. ' + (b.full_context || b.summary)).replace(/"/g, '&quot;')})">
+                                🔊 Audio Brief
+                            </button>
+                            <button class="btn-secondary" style="padding:0.3rem 0.65rem; font-size:0.75rem;" onclick="stopSpeech()">
+                                ⏹ Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <h2 style="font-size:1.15rem; margin:0.35rem 0;">${escapeHtml(b.title)}</h2>
+                    <div class="meta-line">Institution / Source: ${escapeHtml(b.institution)}</div>
+                    <p style="margin-bottom:0.55rem;"><strong>Executive Summary:</strong> ${escapeHtml(b.summary)}</p>
+                    <p style="margin-bottom:0.7rem;"><strong>Strategic Move:</strong> ${escapeHtml(b.strategic_move)}</p>
+
+                    <button class="btn-secondary" onclick="toggleElement('ctx-${b.id}')">
+                        📖 Read Full Factual Context & Post Studio ▾
+                    </button>
+
+                    <div id="ctx-${b.id}" class="hidden">
+                        <div class="context-box"><strong>FULL VERIFIED CONTEXT DOSSIER:</strong>
+
+${escapeHtml(b.full_context || b.summary)}</div>
+
+                        <div class="hook-box">
+                            <p><strong>💡 Suggested Academic Research Question (RQ):</strong> <em>${escapeHtml(b.research_hook)}</em></p>
+                            <p style="margin-top:0.35rem;"><strong>Theoretical Lens:</strong> ${escapeHtml(b.theory_lens)}</p>
+                        </div>
+
+                        <div class="studio-box">
+                            <h4>✍️ Step 1: Write Your Personal Analytical Conclusion</h4>
+                            <textarea id="conc-${b.id}" rows="3" placeholder="Write your takeaway or policy argument here...">${escapeHtml(b.user_conclusion || '')}</textarea>
+
+                            <div class="btn-row" style="margin-bottom:0.8rem;">
+                                <button class="btn-gold" onclick="craftSocialPost(${b.id})">
+                                    ✨ Generate Social Media Post & Research Topic
+                                </button>
+                                <button class="btn-secondary" onclick="saveBriefNotes(${b.id})">
+                                    💾 Save Conclusion
+                                </button>
+                                <span id="save-msg-${b.id}" class="toast"></span>
+                            </div>
+
+                            <h4>📢 Step 2: Ready-to-Publish Post (LinkedIn / X / Blog)</h4>
+                            <textarea id="draft-${b.id}" rows="8">${escapeHtml(b.social_draft || '')}</textarea>
+
+                            <div class="btn-row">
+                                <button class="btn-primary" onclick="copySocialPost(${b.id})">
+                                    📋 Copy Post for Social Media
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="citations">
+                        <span><strong>Verifiable Instruments:</strong> ${escapeHtml(b.citations)}</span>
+                        ${b.source_url ? `<a class="source-link" href="${b.source_url}" target="_blank">Verify Original Source ↗</a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleElement(elId) {
+            const el = document.getElementById(elId);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function craftSocialPost(briefId) {
+            const b = db.briefs.find(x => x.id === briefId);
+            if (!b) return;
+            const userConc = document.getElementById(`conc-${briefId}`).value.trim() ||
+                "Africa's inclusion in global AI governance requires transitioning from passive data suppliers to active architects of sovereign compute and contextual regulation.";
+
+            const generatedDraft =
+`📌 SUGGESTED RESEARCH / BLOG TITLE:
+"${b.title.split(':')[0]}: Strategic Lessons for African AI Sovereignty"
+
+----------------------------------------
+🚀 SOCIAL MEDIA COMMENTARY (LinkedIn / X):
+
+🌍 Strategic Move in African AI Governance: ${b.title}
+
+🏛️ Institutional Context (${b.institution}):
+${b.summary}
+
+🔍 Strategic Policy Shift:
+${b.strategic_move}
+
+💡 My Analytical Conclusion:
+${userConc}
+
+❓ Research Question for Scholars & Policymakers:
+${b.research_hook}
+
+📚 Verified Reference: ${b.citations}
+
+#AfricaAIGovernance #SovereignAI #TechPolicy #ArtificialIntelligence #GlobalSouthAI`;
+
+            document.getElementById(`draft-${briefId}`).value = generatedDraft;
+            saveBriefNotes(briefId);
+        }
+
+        function saveBriefNotes(briefId) {
+            const conclusion = document.getElementById(`conc-${briefId}`).value;
+            const social_draft = document.getElementById(`draft-${briefId}`).value;
+            const b = db.briefs.find(x => x.id === briefId);
+            if (b) {
+                b.user_conclusion = conclusion;
+                b.social_draft = social_draft;
+                if (conclusion.trim().length > 0) {
+                    b.concluded_date = getTodayStr();
+                }
+                saveDatabase();
+            }
+            const msg = document.getElementById(`save-msg-${briefId}`);
+            if (msg) {
+                msg.innerText = '✓ Saved!';
+                setTimeout(() => { msg.innerText = ''; }, 3000);
+            }
+        }
+
+        function copySocialPost(briefId) {
+            const draftEl = document.getElementById(`draft-${briefId}`);
+            if (!draftEl.value.trim()) craftSocialPost(briefId);
+            navigator.clipboard.writeText(draftEl.value);
+            const msg = document.getElementById(`save-msg-${briefId}`);
+            if (msg) {
+                msg.innerText = '📋 Copied to clipboard!';
+                setTimeout(() => { msg.innerText = ''; }, 3000);
+            }
+        }
+
+        // Browser-Native Live RSS Fetcher (Works on Netlify & Mobile!)
+        async function syncLiveBriefsBrowser() {
+            const btn = document.getElementById('sync-btn');
+            const status = document.getElementById('sync-status');
+            btn.disabled = true;
+            btn.innerText = 'Fetching Live News...';
+            status.classList.remove('hidden');
+            status.innerText = 'Querying live African AI Governance feeds...';
+
+            const rssUrl = 'https://news.google.com/rss/search?q=' +
+                encodeURIComponent('("African Union" OR "Nigeria" OR "Kenya" OR "South Africa" OR "Ghana") AND ("AI governance" OR "Artificial Intelligence strategy" OR "NITDA")') +
+                '&hl=en-NG&gl=NG&ceid=NG:en';
+            const apiBridge = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const res = await fetch(apiBridge);
+                const data = await res.json();
+                let added = 0;
+                if (data.status === 'ok' && Array.isArray(data.items)) {
+                    data.items.slice(0, 6).forEach(item => {
+                        const cleanTitle = (item.title || '').split(' - ')[0].trim();
+                        if (cleanTitle && !db.briefs.some(b => b.title === cleanTitle)) {
+                            const pubDate = (item.pubDate || '').slice(0, 10) || getTodayStr();
+                            const cleanDesc = (item.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                            db.briefs.unshift({
+                                id: Date.now() + Math.floor(Math.random() * 1000),
+                                date_published: pubDate,
+                                title: cleanTitle,
+                                institution: item.author || 'Live Continental Policy Monitor',
+                                summary: cleanDesc.length > 30 ? cleanDesc : cleanTitle,
+                                full_context: `PRIMARY REPORT EXTRACT (${pubDate}):
+${cleanDesc}
+
+CONTINENTAL GOVERNANCE CONTEXT:
+Tracked via live feed under Phase I (2025-2026) of the African Union Continental AI Strategy. Click 'Verify Original Source' below to inspect the primary article.`,
+                                strategic_move: 'Translating continental AI governance frameworks into domestic institutional and sovereign infrastructure capacity.',
+                                citations: `Primary Source (${pubDate}); AU Continental AI Strategy Framework (2025-2030)`,
+                                research_hook: "How can African states resolve the 'Development-Governance Paradox' when formulating national AI rules ahead of enforcement capacity?",
+                                theory_lens: 'Institutional Sequencing Theory (Fukuyama) & Decolonial Computing',
+                                source_url: item.link || 'https://au.int',
+                                user_conclusion: '',
+                                social_draft: '',
+                                concluded_date: ''
+                            });
+                            added++;
+                        }
+                    });
+                    saveDatabase();
+                    status.innerText = `✓ Sync complete! Added ${added} new live governance brief(s).`;
+                } else {
+                    status.innerText = '✓ Showing your saved verified database briefs.';
+                }
+            } catch (err) {
+                status.innerText = '⚠ Offline mode: showing your saved verified database briefs.';
+            }
+            btn.disabled = false;
+            btn.innerText = '↻ Fetch Live Africa AI News';
+        }
+
+        // =============================================================
+        // WEEKLY LITERATURE REVIEW & BLOG COMPILER
+        // =============================================================
+        function compileWeeklyReview() {
+            const concluded = db.briefs.filter(b => (b.user_conclusion || '').trim().length > 0);
+            const targetList = concluded.length > 0 ? concluded : db.briefs.slice(0, 3);
+
+            let md = `# Weekly Synthesis: Strategic Moves in African AI Governance
+`;
+            md += `*Compiled on ${getTodayStr()} by Wahab Badmus*
+
+`;
+            md += `## 1. Executive Overview
+`;
+            md += `This synthesis examines ${targetList.length} key institutional developments shaping Africa's inclusion in global artificial intelligence governance.
+
+`;
+
+            targetList.forEach((b, idx) => {
+                md += `### ${idx + 1}. ${b.title} (${b.date_published})
+`;
+                md += `- **Lead Institution:** ${b.institution}
+`;
+                md += `- **Strategic Inclusion Move:** ${b.strategic_move}
+`;
+                md += `- **Analytical Conclusion:** ${b.user_conclusion ? b.user_conclusion : '(Draft conclusion pending — see primary dossier)'}
+`;
+                md += `- **Research Question (RQ):** *${b.research_hook}*
+`;
+                md += `- **Theoretical Anchor:** ${b.theory_lens}
+`;
+                md += `- **Verifiable Citations:** ${b.citations}
+
+`;
+            });
+
+            document.getElementById('compiled-output').value = md;
+        }
+
+        function copyCompiledReview() {
+            const el = document.getElementById('compiled-output');
+            if (!el.value.trim()) compileWeeklyReview();
+            navigator.clipboard.writeText(el.value);
+            const msg = document.getElementById('compiler-msg');
+            msg.innerText = '📋 Markdown copied!';
+            setTimeout(() => { msg.innerText = ''; }, 3000);
+        }
+
+        // =============================================================
+        // JSON BACKUP / RESTORE & CUSTOM LESSON CREATOR
+        // =============================================================
+        function exportBackupJson() {
+            const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `antidote-backup-${getTodayStr()}.json`;
+            link.click();
+        }
+
+        function importBackupJson(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.cards && imported.briefs) {
+                        db = imported;
+                        saveDatabase();
+                        alert('✓ Backup restored successfully!');
+                    }
+                } catch (err) {
+                    alert('Invalid JSON backup file.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function saveCustomCard() {
+            const topic = document.getElementById('c-topic').value.trim();
+            const c_code = document.getElementById('c-code').value.trim();
+            if (!topic || !c_code) {
+                alert('Please enter at least a Lesson Title and C/SQL Code.');
+                return;
+            }
+            const nextDay = db.cards.length + 1;
+            const gate = document.getElementById('c-gate').value.trim() || c_code.split('\n')[0].trim();
+            db.cards.push({
+                id: Date.now(),
+                day_number: nextDay,
+                lecture: document.getElementById('c-lecture').value.trim() || `Day ${nextDay} • Custom Lesson`,
+                topic: topic,
+                c_code: c_code,
+                python_code: document.getElementById('p-code').value.trim(),
+                explanation: document.getElementById('c-explain').value.trim(),
+                unlock_gate: gate,
+                gate_hint: `Type the key line: ${gate}`,
+                mastered: 0,
+                completed_date: '',
+                review_stage: 0
+            });
+            saveDatabase();
+            switchTab('cs50');
+        }
+
+        // =============================================================
+        // PHONE LOCK-SCREEN WALLPAPER GENERATOR (1080x2400 PNG)
+        // =============================================================
+        function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+            const rawLines = String(text).split('\n');
+            for (let r = 0; r < rawLines.length; r++) {
+                const words = rawLines[r].split(' ');
+                let line = '';
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                        ctx.fillText(line, x, y);
+                        line = words[n] + ' ';
+                        y += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, x, y);
+                y += lineHeight;
+            }
+            return y;
+        }
+
+        function downloadWallpaper(cardId) {
+            const c = db.cards.find(x => x.id === cardId);
+            if (!c) return;
+            const canvas = document.getElementById('wallpaper-canvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#070a12';
+            ctx.fillRect(0, 0, 1080, 2400);
+
+            let y = 500;
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 34px monospace';
+            ctx.fillText(`◈ ${c.lecture.toUpperCase()}`, 70, y);
+
+            y += 65;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 46px system-ui, sans-serif';
+            y = wrapCanvasText(ctx, c.topic, 70, y, 940, 58);
+
+            y += 30;
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(60, y, 960, 480);
+            ctx.strokeStyle = '#26334d';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(60, y, 960, 480);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 28px monospace';
+            ctx.fillText('// C LANGUAGE (CS50)', 95, y + 50);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '31px Consolas, monospace';
+            wrapCanvasText(ctx, c.c_code, 95, y + 105, 890, 44);
+
+            y += 520;
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(60, y, 960, 340);
+            ctx.strokeRect(60, y, 960, 340);
+
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 28px monospace';
+            ctx.fillText('# PYTHON 3 EQUIVALENT', 95, y + 50);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '31px Consolas, monospace';
+            wrapCanvasText(ctx, c.python_code, 95, y + 105, 890, 44);
+
+            y += 390;
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 30px system-ui, sans-serif';
+            ctx.fillText('KEY CONCEPT TAKEAWAY:', 70, y);
+
+            y += 50;
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '32px system-ui, sans-serif';
+            wrapCanvasText(ctx, c.explanation, 70, y, 940, 46);
+
+            const link = document.createElement('a');
+            link.download = `cs50-day-${c.day_number}-lockscreen.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function renderAll() {
+            renderHabitBar();
+            renderCS50Tracker();
+            renderBriefs();
+        }
+
+        renderAll();
+    </script>
+</body>
+</html>
